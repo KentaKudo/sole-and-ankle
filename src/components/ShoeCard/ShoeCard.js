@@ -31,25 +31,14 @@ const ShoeCard = ({
       ? "new-release"
       : "default";
 
-  const texts = {
-    "on-sale": "Sale",
-    "new-release": "Just Released!",
-  };
-
-  const colours = {
-    "on-sale": COLORS.primary,
-    "new-release": COLORS.secondary,
-  };
-
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
-          {variant !== "default" && (
-            <Label style={{ background: colours[variant] }}>
-              {texts[variant]}
-            </Label>
+          {variant === "on-sale" && <OnSaleLabel>Sale</OnSaleLabel>}
+          {variant === "new-release" && (
+            <NewReleaseLabel>Just Released!</NewReleaseLabel>
           )}
         </ImageWrapper>
         <Spacer size={12} />
@@ -57,17 +46,19 @@ const ShoeCard = ({
           <Name>{name}</Name>
           <Price
             style={{
-              textDecoration: variant === "on-sale" ? "line-through" : null,
+              "--text-decoration":
+                variant === "on-sale" ? "line-through" : undefined,
+              "--color": variant === "on-sale" ? COLORS.gray[700] : undefined,
             }}
           >
             {formatPrice(price)}
-            {variant === "on-sale" && (
-              <SalePrice>{formatPrice(salePrice)}</SalePrice>
-            )}
           </Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {variant === "on-sale" && (
+            <SalePrice>{formatPrice(salePrice)}</SalePrice>
+          )}
         </Row>
       </Wrapper>
     </Link>
@@ -78,7 +69,7 @@ const Link = styled.a`
   text-decoration: none;
   color: inherit;
 
-  flex: 1 1 260px;
+  flex: 1 0 260px;
 `;
 
 const Wrapper = styled.article`
@@ -108,6 +99,14 @@ const Label = styled.div`
   font-weight: 700;
 `;
 
+const OnSaleLabel = styled(Label)`
+  background-color: ${COLORS.primary};
+`;
+
+const NewReleaseLabel = styled(Label)`
+  background-color: ${COLORS.secondary};
+`;
+
 const Row = styled.div`
   font-size: 1rem;
 
@@ -121,7 +120,8 @@ const Name = styled.h3`
 `;
 
 const Price = styled.span`
-  position: relative;
+  color: var(--color);
+  text-decoration: var(--text-decoration);
 `;
 
 const ColorInfo = styled.p`
@@ -129,10 +129,6 @@ const ColorInfo = styled.p`
 `;
 
 const SalePrice = styled.span`
-  position: absolute;
-  top: 23px;
-  left: 0;
-
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
 `;
